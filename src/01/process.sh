@@ -4,7 +4,6 @@
 function create {
     
     sudo mkdir -p $ABSOLUTE_PATH
-    local log_file="/home/wsl/Desktop/Linux_Monitoring/DO4_LinuxMonitoring_v2.0-1-master/src/01/creation_log.log"
     local cur_date=$(date +%d%m%y)
     local i
     local j

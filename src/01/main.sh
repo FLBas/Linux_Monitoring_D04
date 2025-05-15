@@ -7,8 +7,8 @@ SCRIPT_DIR="$(dirname "$0")"
 source $SCRIPT_DIR/process.sh
 
 function main () {
-
-    local log_file="/home/wsl/Desktop/Linux_Monitoring/DO4_LinuxMonitoring_v2.0-1-master/src/01/creation_log.log"
+    FILE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    local log_file="$FILE_DIR/creation_log.log"
     local ABSOLUTE_PATH=$1
     local num_subfolders=$2
     local symbols_folder=$3
