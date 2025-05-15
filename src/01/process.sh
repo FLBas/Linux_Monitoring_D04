@@ -4,7 +4,7 @@
 function create {
     
     sudo mkdir -p $ABSOLUTE_PATH
-    local log_file="creation_log.log"
+    local log_file="/home/wsl/Desktop/Linux_Monitoring/DO4_LinuxMonitoring_v2.0-1-master/src/01/creation_log.log"
     local cur_date=$(date +%d%m%y)
     local i
     local j
@@ -26,12 +26,55 @@ function create {
 
             check_free_space
 
-            sudo dd if=/dev/zero of=$ABSOLUTE_PATH/$subfolder_name/$file_name bs=1M count=$size_
+            sudo dd if=/dev/zero of=$ABSOLUTE_PATH/$subfolder_name/$file_name bs=1KB count=$size_
 
             file_size=$(stat -c %s $ABSOLUTE_PATH/$subfolder_name/$file_name)
             file_date=$(stat -c %y $ABSOLUTE_PATH/$subfolder_name/$file_name)
             echo "Файл: $ABSOLUTE_PATH/$subfolder_name/$file_name, Дата создания: $file_date, Размер: $file_size байт" >> "$log_file"
         done
+    done
+
+    return $ERROR
+}
+
+
+function create {
+    
+    local cur_date=$(date +%d%m%y)
+    local i
+    local j
+    local size_num=$(echo $size_ | tr -dc '0-9')
+    local size_unit=$(echo $size_ | tr -dc 'a-zA-Z' | head -c 1)
+    local size_full_unit=$(echo $size_ | tr -dc 'a-zA-Z')
+    local fullsize=$size_num$size_unit
+
+    sudo mkdir -p $ABSOLUTE_PATH
+
+    echo "Лог создания папок и файлов (Дата: $(date))" > "$log_file"
+    echo "----------------------------------------------------------------------" >> "$log_file"
+
+
+    for((i=0; i < $num_subfolders; i++)); do
+        local subfolder_name=$(generate_name $symbols_folder)
+        subfolder_name=$subfolder_name"_"$cur_date
+
+        sudo mkdir -p $ABSOLUTE_PATH/$subfolder_name
+
+        echo "Папка: $ABSOLUTE_PATH/$subfolder_name, Дата создания: $(date), Размер: $(du -sh $ABSOLUTE_PATH/$subfolder_name | awk '{print $1}')" >> "$log_file"
+
+        for((j=0; j < $num_files; j++)); do
+            local file_name=$(generate_name $symbols_file)
+
+            check_free_space
+
+            # sudo dd if=/dev/zero of=$ABSOLUTE_PATH/$subfolder_name/$file_name bs=1M count=$size_
+            sudo fallocate -l $fullsize $ABSOLUTE_PATH/$subfolder_name/$file_name
+
+            local file_size=$(stat -c %s $ABSOLUTE_PATH/$subfolder_name/$file_name)
+            local file_date=$(stat -c %y $ABSOLUTE_PATH/$subfolder_name/$file_name)
+            echo "Файл: $ABSOLUTE_PATH/$subfolder_name/$file_name, Дата создания: $file_date, Размер: $file_size байт" >> "$log_file"
+        done
+        echo "----------------------------------------------------------------------------" >> "$log_file"
     done
 
     return $ERROR
